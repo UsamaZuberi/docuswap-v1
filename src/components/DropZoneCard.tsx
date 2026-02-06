@@ -24,14 +24,16 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
   );
 
   return (
-    <Card className="border border-white/10 bg-white/5 shadow-xl shadow-slate-950/40 backdrop-blur">
+    <Card className="border border-white/10 bg-slate-900/50 shadow-2xl shadow-slate-950/60 backdrop-blur">
       <CardContent className="p-6 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className={`group flex min-h-55 flex-col items-center justify-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center transition ${
-            isDragging ? "border-indigo-400 bg-indigo-500/10" : "border-white/10 bg-white/5"
+          className={`group flex min-h-55 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed px-6 py-10 text-center transition ${
+            isDragging
+              ? "border-indigo-400/80 bg-indigo-500/10"
+              : "border-white/10 bg-linear-to-br from-white/5 via-white/0 to-white/5"
           }`}
           onDragOver={(event) => {
             event.preventDefault();

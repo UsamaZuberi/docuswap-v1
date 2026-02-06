@@ -2,6 +2,7 @@
 
 import { BatchList } from "@/components/BatchList";
 import { DropZoneCard } from "@/components/DropZoneCard";
+import { Footer } from "@/components/Footer";
 import { GlobalControls } from "@/components/GlobalControls";
 import { Header } from "@/components/Header";
 import { FormatSelector } from "@/components/FormatSelector";
@@ -31,8 +32,10 @@ export default function Home() {
   } = useConverter();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:px-6 md:py-12">
+    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+      <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-24 left-0 h-80 w-80 rounded-full bg-sky-500/10 blur-[120px]" />
+      <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:px-6 md:py-12">
         <Header />
         <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="grid gap-4 md:grid-cols-2">
@@ -76,6 +79,7 @@ export default function Home() {
           onRemove={removeItem}
           onQualityChange={setQuality}
         />
+        <Footer />
       </main>
     </div>
   );

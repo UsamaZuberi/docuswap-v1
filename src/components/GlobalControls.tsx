@@ -15,7 +15,7 @@ interface GlobalControlsProps {
 
 export function GlobalControls({ onConvertAll, onDownloadAll, onClearAll, hasItems, hasOutputs, busy }: GlobalControlsProps) {
   return (
-    <Card className="border border-white/10 bg-white/5">
+    <Card className="border border-white/10 bg-slate-900/50 shadow-xl shadow-slate-950/60 backdrop-blur">
       <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white">Batch Controls</h3>

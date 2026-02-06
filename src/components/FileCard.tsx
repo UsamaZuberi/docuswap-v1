@@ -29,7 +29,7 @@ export function FileCard({
   const isImage = item.file.type.startsWith("image/") || item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|heic|svg)$/);
 
   return (
-    <Card className="border border-white/10 bg-slate-900/60 transition-shadow hover:shadow-lg hover:shadow-slate-950/40">
+    <Card className="border border-white/10 bg-linear-to-br from-slate-900/70 via-slate-900/50 to-slate-900/30 transition-shadow hover:shadow-xl hover:shadow-slate-950/60">
       <CardContent className="space-y-4 p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>

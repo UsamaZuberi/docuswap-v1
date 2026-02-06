@@ -76,11 +76,13 @@ export default function Home() {
           sourceFormat={sourceFormat}
           targetFormat={targetFormat}
         />
-        <BatchStats
-          totalFiles={totalFiles}
-          totalSizeLabel={formatBytes(totalSize)}
-          completedFiles={completedFiles}
-        />
+        {totalFiles > 0 ? (
+          <BatchStats
+            totalFiles={totalFiles}
+            totalSizeLabel={formatBytes(totalSize)}
+            completedFiles={completedFiles}
+          />
+        ) : null}
         <GlobalControls
           onConvertAll={convertAll}
           onDownloadAll={downloadAll}

@@ -1,6 +1,7 @@
 import type { TargetFormat } from "./types";
 
 export const sourceFormats = [
+  "auto",
   "png",
   "jpeg",
   "webp",
@@ -20,6 +21,7 @@ export const sourceFormats = [
 export type SourceFormat = (typeof sourceFormats)[number];
 
 export const targetsBySource: Record<SourceFormat, TargetFormat[]> = {
+  auto: [],
   png: ["jpeg", "webp", "heic"],
   jpeg: ["png", "webp", "heic"],
   webp: ["png", "jpeg", "heic"],

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import JSZip from "jszip";
 
-import { convertFile } from "@/utils/converters";
+import { convertFile, getTargetFormats } from "@/utils/converters";
 import type { TargetFormat } from "@/utils/converters/types";
 import { formatBytes, withExtension } from "@/utils/format";
 import { isSourceFormat, sourceFormats, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
@@ -36,6 +36,16 @@ export function useConverter() {
       const rejected: File[] = [];
 
       limitedFiles.forEach((file) => {
+        if (sourceFormat === "auto") {
+          const targets = getTargetFormats(file);
+          if (targets.length) {
+            accepted.push(file);
+          } else {
+            rejected.push(file);
+          }
+          return;
+        }
+
         const ext = file.name.toLowerCase().split(".").pop() ?? "";
         if (isSourceFormat(ext) && ext === sourceFormat) {
           accepted.push(file);
@@ -49,7 +59,11 @@ export function useConverter() {
         warnings.push(`Only the first ${MAX_FILES_PER_BATCH} files were added. Select up to ${MAX_FILES_PER_BATCH} at a time.`);
       }
       if (rejected.length) {
-        warnings.push(`Skipped ${rejected.length} file(s) that do not match .${sourceFormat}.`);
+        warnings.push(
+          sourceFormat === "auto"
+            ? `Skipped ${rejected.length} unsupported file(s).`
+            : `Skipped ${rejected.length} file(s) that do not match .${sourceFormat}.`
+        );
       }
       setUploadWarning(warnings.length ? warnings.join(" ") : null);
 
@@ -57,11 +71,12 @@ export function useConverter() {
 
       setItems((prev) => {
         const next = accepted.map((file) => {
+          const autoTarget = sourceFormat === "auto" ? getTargetFormats(file)[0] : undefined;
           return {
             id: crypto.randomUUID(),
             file,
             sizeLabel: formatBytes(file.size),
-            targetFormat,
+            targetFormat: autoTarget ?? targetFormat,
             progress: 0,
             status: "queued" as ConversionStatus,
             quality: DEFAULT_QUALITY,

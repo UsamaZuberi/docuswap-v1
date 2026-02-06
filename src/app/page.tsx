@@ -31,6 +31,8 @@ export default function Home() {
     busy,
   } = useConverter();
 
+  const isAuto = sourceFormat === "auto";
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-indigo-400/20 blur-[120px]" />
@@ -50,10 +52,16 @@ export default function Home() {
               value={targetFormat}
               options={targetsBySource[sourceFormat]}
               onValueChange={(value) => setGlobalTargetFormat(value as typeof targetFormat)}
+              disabled={isAuto}
             />
           </div>
+          {isAuto ? (
+            <div className="rounded-lg border border-indigo-300 bg-indigo-100/70 px-4 py-2 text-xs font-medium text-indigo-900 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-200">
+              Auto-detect suggests a target per file based on its type.
+            </div>
+          ) : null}
           {uploadWarning ? (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
+            <div className="rounded-lg border border-amber-300 bg-amber-100/80 px-4 py-2 text-xs font-medium text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
               {uploadWarning}
             </div>
           ) : null}

@@ -24,7 +24,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
   );
 
   return (
-    <Card className="border border-slate-300 bg-white shadow-xl shadow-slate-200/70 backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:shadow-slate-950/60">
+    <Card className="border border-slate-300 bg-white shadow-xl shadow-slate-200/70 backdrop-blur transition-shadow hover:shadow-indigo-200/40 dark:border-white/10 dark:bg-slate-900/70 dark:shadow-slate-950/60 dark:hover:shadow-indigo-500/20">
       <CardContent className="p-6 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -82,6 +82,8 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
 
 function formatToAccept(format: string) {
   switch (format) {
+    case "auto":
+      return "*/*";
     case "jpeg":
       return ".jpg,.jpeg,image/jpeg";
     case "png":

@@ -11,6 +11,7 @@ interface FormatSelectorProps<T extends string> {
   value: T;
   options: readonly T[];
   onValueChange: (value: T) => void;
+  disabled?: boolean;
 }
 
 export function FormatSelector<T extends string>({
@@ -18,12 +19,13 @@ export function FormatSelector<T extends string>({
   value,
   options,
   onValueChange,
+  disabled,
 }: FormatSelectorProps<T>) {
   return (
     <div className="space-y-2">
       <p className="text-xs uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500">{label}</p>
-      <Select value={value} onValueChange={(next) => onValueChange(next as T)}>
-        <SelectTrigger className="border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-white/10 dark:bg-slate-950/60 dark:text-white">
+      <Select value={value} onValueChange={(next) => onValueChange(next as T)} disabled={disabled}>
+        <SelectTrigger className="border border-slate-200 bg-white text-slate-900 shadow-sm disabled:opacity-60 dark:border-white/10 dark:bg-slate-950/60 dark:text-white">
           <SelectValue placeholder={`Choose ${label.toLowerCase()}`} />
         </SelectTrigger>
         <SelectContent className="border border-slate-200 bg-white text-slate-900 dark:border-white/10 dark:bg-slate-950 dark:text-white">

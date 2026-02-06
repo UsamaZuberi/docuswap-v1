@@ -14,6 +14,7 @@ interface DropZoneCardProps {
 export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZoneCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const targetLabel = sourceFormat === "auto" ? "Suggested" : targetFormat.toUpperCase();
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
@@ -52,7 +53,9 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
           <div>
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Drop files here</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Upload .{sourceFormat} files and convert to {targetFormat.toUpperCase()}.
+              {sourceFormat === "auto"
+                ? "Upload any supported files and we'll suggest a target."
+                : `Upload .${sourceFormat} files and convert to ${targetLabel}.`}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -64,7 +67,11 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
               <FolderOpen className="h-4 w-4" />
               Browse Files
             </Button>
-            <span className="text-xs text-slate-500 dark:text-slate-500">Supported: {sourceFormat.toUpperCase()} → {targetFormat.toUpperCase()}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-500">
+              {sourceFormat === "auto"
+                ? "Supported: Auto → Suggested"
+                : `Supported: ${sourceFormat.toUpperCase()} → ${targetLabel}`}
+            </span>
           </div>
         </motion.div>
         <input

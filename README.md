@@ -69,3 +69,8 @@ The project includes:
 - Sitemap: /sitemap.xml
 - Robots: /robots.txt
 - Open Graph + Twitter metadata
+
+## PWA & Offline Cache
+
+DocuSwap registers a service worker and ships a web app manifest for offline caching.
+After deployment, install the app from the browser menu (Add to Home Screen / Install App).

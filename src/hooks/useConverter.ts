@@ -22,11 +22,13 @@ export interface ConversionItem {
 
 const DEFAULT_QUALITY = 0.9;
 const MAX_FILES_PER_BATCH = 100;
+const DEFAULT_SOURCE: SourceFormat = "png";
+const DEFAULT_TARGET: TargetFormat = targetsBySource[DEFAULT_SOURCE][0];
 
 export function useConverter() {
   const [items, setItems] = useState<ConversionItem[]>([]);
-  const [sourceFormat, setSourceFormat] = useState<SourceFormat>(sourceFormats[0]);
-  const [targetFormat, setCurrentTargetFormat] = useState<TargetFormat>(targetsBySource[sourceFormats[0]][0]);
+  const [sourceFormat, setSourceFormat] = useState<SourceFormat>(DEFAULT_SOURCE);
+  const [targetFormat, setCurrentTargetFormat] = useState<TargetFormat>(DEFAULT_TARGET);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
 
   const addFiles = useCallback(
@@ -98,7 +100,7 @@ export function useConverter() {
 
   const setGlobalSourceFormat = useCallback((value: SourceFormat) => {
     setSourceFormat(value);
-    const nextTarget = targetsBySource[value][0];
+    const nextTarget = value === "auto" ? DEFAULT_TARGET : targetsBySource[value][0];
     setCurrentTargetFormat(nextTarget);
     setItems([]);
     setUploadWarning(null);

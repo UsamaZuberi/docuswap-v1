@@ -1,11 +1,16 @@
 import { FileScan, Sparkles } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import dynamic from "next/dynamic";
+
+const ThemeToggle = dynamic(
+  () => import("@/components/ThemeToggle").then((mod) => mod.ThemeToggle),
+  { ssr: false }
+);
 
 export function Header() {
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-600/30 bg-indigo-600/20 text-indigo-700 shadow-lg shadow-indigo-500/20 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-500">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-200">
           <FileScan className="h-6 w-6" />
         </div>
         <div>

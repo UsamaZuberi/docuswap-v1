@@ -12,9 +12,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://docuswap.local";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "DocuSwap",
   description: "Client-side file conversion studio for developers.",
+  applicationName: "DocuSwap",
+  openGraph: {
+    title: "DocuSwap",
+    description: "Client-side file conversion studio for developers.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DocuSwap",
+    description: "Client-side file conversion studio for developers.",
+  },
 };
 
 export default function RootLayout({

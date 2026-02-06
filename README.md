@@ -55,3 +55,17 @@ yarn start
 - PDF → DOCX uses a stub payload with pdf-lib metadata extraction.
 - DOCX → PDF is a placeholder for a WASM-based implementation.
 - HEIC output is not supported in-browser yet.
+
+## Deployment & SEO
+
+Set your public site URL so sitemap, robots, and metadata resolve correctly:
+
+```bash
+NEXT_PUBLIC_SITE_URL="https://your-domain.com"
+```
+
+The project includes:
+
+- Sitemap: /sitemap.xml
+- Robots: /robots.txt
+- Open Graph + Twitter metadata

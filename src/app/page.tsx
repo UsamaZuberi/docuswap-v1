@@ -2,12 +2,14 @@
 
 import { BatchList } from "@/components/BatchList";
 import { DropZoneCard } from "@/components/DropZoneCard";
+import { BatchStats } from "@/components/BatchStats";
 import { Footer } from "@/components/Footer";
 import { GlobalControls } from "@/components/GlobalControls";
 import { Header } from "@/components/Header";
 import { FormatSelector } from "@/components/FormatSelector";
 import { useConverter } from "@/hooks/useConverter";
 import { sourceFormats, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
+import { formatBytes } from "@/utils/format";
 
 export default function Home() {
   const {
@@ -32,6 +34,9 @@ export default function Home() {
   } = useConverter();
 
   const isAuto = sourceFormat === "auto";
+  const totalFiles = items.length;
+  const totalSize = items.reduce((sum, item) => sum + item.file.size, 0);
+  const completedFiles = items.filter((item) => item.status === "done").length;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -70,6 +75,11 @@ export default function Home() {
           onFilesAdded={addFiles}
           sourceFormat={sourceFormat}
           targetFormat={targetFormat}
+        />
+        <BatchStats
+          totalFiles={totalFiles}
+          totalSizeLabel={formatBytes(totalSize)}
+          completedFiles={completedFiles}
         />
         <GlobalControls
           onConvertAll={convertAll}

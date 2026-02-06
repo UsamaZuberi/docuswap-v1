@@ -5,9 +5,11 @@ DocuSwap is a client-side file conversion studio built with Next.js 15, Tailwind
 ## Features
 
 - Drag-and-drop batch uploads with individual file cards.
-- Per-file target format selection, progress, retry, and download controls.
-- Global batch actions for Convert All and Download ZIP.
-- Client-side conversions for images, data formats, and developer utilities.
+- Global source + target selectors with Auto-detect mode and suggested targets.
+- Per-file progress, retry, delete, and download controls.
+- Batch stats bar (count, total size, completed).
+- Global actions for Convert All, Download ZIP, and Clear.
+- Client-side conversions for images, data formats, developer utilities, and documents.
 - Web Worker template for offloading data conversions.
 
 ## Tech Stack
@@ -54,6 +56,7 @@ yarn start
 
 - PDF → DOCX uses a stub payload with pdf-lib metadata extraction.
 - DOCX → PDF is a placeholder for a WASM-based implementation.
+- PPT/PPTX → PDF uses a stub payload; replace with WASM when available.
 - HEIC output is not supported in-browser yet.
 
 ## Deployment & SEO

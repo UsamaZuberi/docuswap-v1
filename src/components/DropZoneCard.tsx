@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { CloudUpload, FolderOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,9 +24,12 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
   );
 
   return (
-    <Card className="border border-white/10 bg-white/5 shadow-xl backdrop-blur">
-      <CardContent className="p-8">
-        <div
+    <Card className="border border-white/10 bg-white/5 shadow-xl shadow-slate-950/40 backdrop-blur">
+      <CardContent className="p-6 md:p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
           className={`group flex min-h-55 flex-col items-center justify-center gap-4 rounded-xl border border-dashed px-6 py-10 text-center transition ${
             isDragging ? "border-indigo-400 bg-indigo-500/10" : "border-white/10 bg-white/5"
           }`}
@@ -60,7 +64,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
             </Button>
             <span className="text-xs text-slate-500">Supported: {sourceFormat.toUpperCase()} → {targetFormat.toUpperCase()}</span>
           </div>
-        </div>
+        </motion.div>
         <input
           ref={inputRef}
           className="hidden"

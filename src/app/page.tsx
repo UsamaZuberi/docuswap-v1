@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:px-6 md:py-12">
         <Header />
         <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="grid gap-4 md:grid-cols-2">

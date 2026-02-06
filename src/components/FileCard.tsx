@@ -29,9 +29,9 @@ export function FileCard({
   const isImage = item.file.type.startsWith("image/") || item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|heic|svg)$/);
 
   return (
-    <Card className="border border-white/10 bg-slate-900/60">
+    <Card className="border border-white/10 bg-slate-900/60 transition-shadow hover:shadow-lg hover:shadow-slate-950/40">
       <CardContent className="space-y-4 p-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="text-sm font-semibold text-white">{item.file.name}</p>
             <p className="text-xs text-slate-400">{item.sizeLabel}</p>
@@ -46,7 +46,7 @@ export function FileCard({
             Convert to {item.targetFormat.toUpperCase()}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
               variant="secondary"

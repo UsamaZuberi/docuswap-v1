@@ -30,7 +30,7 @@ export function BatchList({
   }
 
   return (
-    <ScrollArea className="h-105 rounded-2xl border border-white/10 bg-slate-900/50 shadow-2xl shadow-slate-950/60 backdrop-blur md:h-130">
+    <ScrollArea className="h-105 rounded-2xl border border-slate-300 bg-white shadow-xl shadow-slate-200/70 dark:border-white/10 dark:bg-slate-900/50 dark:shadow-slate-950/60 md:h-130">
       <ScrollAreaViewport className="h-full p-4">
         <div className="grid gap-4">
           <AnimatePresence mode="popLayout">

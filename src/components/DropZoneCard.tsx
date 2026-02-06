@@ -24,7 +24,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
   );
 
   return (
-    <Card className="border border-white/10 bg-slate-900/50 shadow-2xl shadow-slate-950/60 backdrop-blur">
+    <Card className="border border-slate-300 bg-white shadow-xl shadow-slate-200/70 backdrop-blur dark:border-white/10 dark:bg-slate-900/70 dark:shadow-slate-950/60">
       <CardContent className="p-6 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -32,8 +32,8 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
           transition={{ duration: 0.4, ease: "easeOut" }}
           className={`group flex min-h-55 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed px-6 py-10 text-center transition ${
             isDragging
-              ? "border-indigo-400/80 bg-indigo-500/10"
-              : "border-white/10 bg-linear-to-br from-white/5 via-white/0 to-white/5"
+                ? "border-indigo-400/80 bg-indigo-500/10 dark:bg-indigo-500/15"
+                : "border-slate-300 bg-linear-to-br from-slate-50 via-white to-slate-50 dark:border-white/10 dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-900/60"
           }`}
           onDragOver={(event) => {
             event.preventDefault();
@@ -46,25 +46,25 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
             handleFiles(event.dataTransfer.files);
           }}
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-200">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600/15 text-indigo-700 shadow-sm dark:bg-indigo-500/20 dark:text-indigo-200">
             <CloudUpload className="h-7 w-7" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">Drop files here</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Drop files here</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Upload .{sourceFormat} files and convert to {targetFormat.toUpperCase()}.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button
               variant="secondary"
-              className="bg-white/10 text-white hover:bg-white/20"
+              className="border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
               onClick={() => inputRef.current?.click()}
             >
               <FolderOpen className="h-4 w-4" />
               Browse Files
             </Button>
-            <span className="text-xs text-slate-500">Supported: {sourceFormat.toUpperCase()} → {targetFormat.toUpperCase()}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-500">Supported: {sourceFormat.toUpperCase()} → {targetFormat.toUpperCase()}</span>
           </div>
         </motion.div>
         <input

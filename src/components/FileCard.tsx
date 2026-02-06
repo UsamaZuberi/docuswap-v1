@@ -29,12 +29,12 @@ export function FileCard({
   const isImage = item.file.type.startsWith("image/") || item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|heic|svg)$/);
 
   return (
-    <Card className="border border-white/10 bg-linear-to-br from-slate-900/70 via-slate-900/50 to-slate-900/30 transition-shadow hover:shadow-xl hover:shadow-slate-950/60">
+    <Card className="border border-slate-300 bg-white transition-shadow hover:shadow-xl hover:shadow-slate-200/70 dark:border-white/10 dark:bg-linear-to-br dark:from-slate-900/70 dark:via-slate-900/50 dark:to-slate-900/30 dark:hover:shadow-slate-950/60">
       <CardContent className="space-y-4 p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-sm font-semibold text-white">{item.file.name}</p>
-            <p className="text-xs text-slate-400">{item.sizeLabel}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.file.name}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">{item.sizeLabel}</p>
           </div>
           <Badge variant={statusBadge.variant} className={statusBadge.className}>
             {statusBadge.label}
@@ -42,7 +42,7 @@ export function FileCard({
         </div>
 
         <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-          <div className="rounded-md border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-200">
+          <div className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-200">
             Convert to {item.targetFormat.toUpperCase()}
           </div>
 
@@ -50,7 +50,7 @@ export function FileCard({
             <Button
               size="sm"
               variant="secondary"
-              className="bg-indigo-500/20 text-indigo-100 hover:bg-indigo-500/30"
+              className="bg-indigo-600/15 text-indigo-700 hover:bg-indigo-600/25 dark:bg-indigo-500/20 dark:text-indigo-100 dark:hover:bg-indigo-500/30"
               onClick={() => onConvert(item.id)}
               disabled={item.status === "processing"}
             >
@@ -59,7 +59,7 @@ export function FileCard({
             <Button
               size="sm"
               variant="ghost"
-              className="text-slate-300 hover:text-white"
+              className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
               onClick={() => onRemove(item.id)}
             >
               <Trash2 className="h-4 w-4" />

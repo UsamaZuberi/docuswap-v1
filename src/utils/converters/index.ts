@@ -2,7 +2,7 @@ import { convertDataFile } from "./data";
 import { convertDeveloperFile } from "./developer";
 import { convertDocumentFile } from "./documents";
 import { convertImageFile } from "./image";
-import type { ConversionCategory, ConvertOptions, TargetFormat } from "./types";
+import type { ConversionCategory, ConvertOptions, OutputFormat, TargetFormat } from "./types";
 import { getExtension } from "@/utils/format";
 import { runDataWorkerConversion } from "./workerClient";
 import type { DataFormat } from "./data";
@@ -39,7 +39,7 @@ export function getTargetFormats(file: File): TargetFormat[] {
     return ["png"];
   }
   if (["pdf"].includes(ext)) {
-    return [];
+    return ["png", "jpeg"];
   }
   if (["docx"].includes(ext)) {
     return ["pdf"];
@@ -54,7 +54,7 @@ export async function convertFile(
   file: File,
   target: TargetFormat,
   options: ConvertOptions = {}
-): Promise<{ blob: Blob; extension: TargetFormat }>
+): Promise<{ blob: Blob; extension: OutputFormat }>
  {
   options.onProgress?.(10);
   const category = getCategory(file);

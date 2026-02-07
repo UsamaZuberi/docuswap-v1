@@ -1,4 +1,7 @@
-import type { ConvertOptions, TargetFormat } from "./types";
+import JSZip from "jszip";
+
+import type { ConvertOptions, OutputFormat, TargetFormat } from "./types";
+import { convertPdfToImages } from "@/utils/pdfToImage";
 import { runPptxToPdfWorker } from "@/utils/pptxWorkerClient";
 
 const DOCX_RENDER_WIDTH_PX = 816;
@@ -7,7 +10,7 @@ export async function convertDocumentFile(
   file: File,
   target: TargetFormat,
   options: ConvertOptions = {}
-): Promise<{ blob: Blob; extension: TargetFormat }> {
+): Promise<{ blob: Blob; extension: OutputFormat }> {
   if (target === "pdf" && isDocx(file)) {
     if (typeof window === "undefined") {
       throw new Error("Client conversion requires a browser environment.");
@@ -36,6 +39,33 @@ export async function convertDocumentFile(
     });
     options.onProgress?.(100);
     return { blob, extension: "pdf" };
+  }
+
+  if ((target === "png" || target === "jpeg") && isPdf(file)) {
+    if (typeof window === "undefined") {
+      throw new Error("Client conversion requires a browser environment.");
+    }
+
+    options.onProgress?.(10);
+    const format = target === "png" ? "image/png" : "image/jpeg";
+    const { images, filenames } = await convertPdfToImages(file, {
+      format,
+      quality: target === "jpeg" ? options.quality : undefined,
+      scale: 2,
+      batchSize: 3,
+      onProgress: (current, total) => {
+        const percent = total > 0 ? 10 + (current / total) * 80 : 50;
+        options.onProgress?.(percent);
+      },
+    });
+
+    const zip = new JSZip();
+    images.forEach((image, index) => {
+      zip.file(filenames[index], image);
+    });
+    const blob = await zip.generateAsync({ type: "blob" });
+    options.onProgress?.(100);
+    return { blob, extension: "zip" };
   }
 
   throw new Error("Unsupported document conversion.");
@@ -254,4 +284,8 @@ function isPptx(file: File) {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
     file.name.toLowerCase().endsWith(".pptx")
   );
+}
+
+function isPdf(file: File) {
+  return file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
 }

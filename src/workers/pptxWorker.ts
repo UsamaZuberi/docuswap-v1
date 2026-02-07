@@ -59,6 +59,8 @@ type TextRun = {
 
 type LayoutToken = TextRun & { isWhitespace: boolean };
 
+type UnderlineStyle = "sng" | "dbl" | "sngWrd" | "dblWrd" | "none";
+
 const DEFAULT_SLIDE_WIDTH_EMU = 9144000;
 const DEFAULT_SLIDE_HEIGHT_EMU = 6858000;
 const EMU_PER_INCH = 914400;
@@ -411,8 +413,8 @@ function getParagraphSpacing(paragraph: XmlNode, lineHeightPx: number, scale: nu
 function getLineSpacingMultiplier(paragraph: XmlNode, lineHeightPx: number, scale: number) {
   const pPr = paragraph?.["a:pPr"] as XmlNode | undefined;
   const lnSpc = pPr?.["a:lnSpc"] as XmlNode | undefined;
-  const spcPts = lnSpc?.["a:spcPts"]?._attributes?.val;
-  const spcPct = lnSpc?.["a:spcPct"]?._attributes?.val;
+  const spcPts = getAttr(getNode(lnSpc, "a:spcPts"), "val");
+  const spcPct = getAttr(getNode(lnSpc, "a:spcPct"), "val");
 
   if (Number(spcPts)) {
     const px = (Number(spcPts) / 100) * PT_TO_PX * scale;
@@ -737,7 +739,7 @@ function buildRuns(
     const text = (run?.["a:t"] as XmlNode | undefined)?._text;
     if (typeof text !== "string") return;
     const rPr = run?.["a:rPr"] as XmlNode | undefined;
-    const sz = rPr?._attributes?.sz;
+    const sz = getAttr(rPr, "sz");
     const numeric = Number(sz);
     if (!Number.isNaN(numeric)) {
       lastSizePt = numeric / 100;
@@ -746,8 +748,8 @@ function buildRuns(
     const runUnderlineStyle = getUnderlineStyle(rPr) ?? lastUnderlineStyle;
     const runUnderline = runUnderlineStyle !== "none";
     const runStrike = getStrike(rPr) ?? lastStrike;
-    const runBold = getBooleanAttr(rPr?._attributes?.b) ?? lastBold;
-    const runItalic = getBooleanAttr(rPr?._attributes?.i) ?? lastItalic;
+    const runBold = getBooleanAttr(getAttr(rPr, "b")) ?? lastBold;
+    const runItalic = getBooleanAttr(getAttr(rPr, "i")) ?? lastItalic;
     const outline = getTextOutline(rPr, themeColors, scale);
     const runUnderlineColor = getUnderlineColor(rPr, themeColors) ?? lastUnderlineColor ?? runColor;
     const runStrikeColor = getStrikeColor(rPr, themeColors) ?? lastStrikeColor ?? runColor;

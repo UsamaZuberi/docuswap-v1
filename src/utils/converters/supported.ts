@@ -10,6 +10,7 @@ export const sourceFormats = [
   "csv",
   "xml",
   "md",
+  "pdf",
   "docx",
   "pptx",
 ] as const;
@@ -26,6 +27,7 @@ export const targetsBySource: Record<SourceFormat, TargetFormat[]> = {
   csv: ["json", "md"],
   xml: ["json"],
   md: ["csv"],
+  pdf: ["png", "jpeg"],
   docx: ["pdf"],
   pptx: ["pdf"],
 };

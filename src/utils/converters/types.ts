@@ -12,6 +12,8 @@ export type TargetFormat =
   | "pdf"
   | "docx";
 
+export type OutputFormat = TargetFormat | "zip";
+
 export interface ConvertOptions {
   quality?: number;
   useWorker?: boolean;

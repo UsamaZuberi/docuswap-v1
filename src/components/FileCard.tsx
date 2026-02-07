@@ -35,6 +35,14 @@ export function FileCard({
   const isImage =
     item.file.type.startsWith("image/") ||
     item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|svg)$/);
+  const isPdf =
+    item.file.type === "application/pdf" ||
+    item.file.name.toLowerCase().endsWith(".pdf");
+  const isPdfToImages = isPdf && (item.targetFormat === "png" || item.targetFormat === "jpeg");
+  const targetLabel = isPdfToImages
+    ? `${item.targetFormat.toUpperCase()} (ZIP)`
+    : item.targetFormat.toUpperCase();
+  const allowQuality = isImage || (isPdf && item.targetFormat === "jpeg");
 
   return (
     <Card className="border border-slate-300 bg-white transition-shadow hover:shadow-xl hover:shadow-slate-200/70 dark:border-slate-700/60 dark:bg-slate-900 dark:hover:shadow-slate-950/60">
@@ -58,7 +66,7 @@ export function FileCard({
 
         <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
           <div className="rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 dark:border-white/10 dark:bg-slate-950/60 dark:text-slate-200">
-            Convert to {item.targetFormat.toUpperCase()}
+            Convert to {targetLabel}
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -102,7 +110,7 @@ export function FileCard({
           </div>
         </div>
 
-        {isImage ? (
+        {allowQuality ? (
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-600 dark:text-slate-400">
               Quality

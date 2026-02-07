@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import JSZip from "jszip";
 
 import { convertFile } from "@/utils/converters";
-import type { TargetFormat } from "@/utils/converters/types";
+import type { OutputFormat, TargetFormat } from "@/utils/converters/types";
 import { formatBytes, getExtension, withExtension } from "@/utils/format";
 import { isSourceFormat, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
 
@@ -13,6 +13,7 @@ export interface ConversionItem {
   file: File;
   sizeLabel: string;
   targetFormat: TargetFormat;
+  outputExtension?: OutputFormat;
   progress: number;
   status: ConversionStatus;
   output?: Blob;
@@ -146,7 +147,7 @@ export function useConverter() {
         return [...prev, ...next];
       });
     },
-    [detectSourceFromFile, normalizeExtension, sourceFormat, targetFormat]
+    [autoDetectedSource, detectSourceFromFile, normalizeExtension, sourceFormat, targetFormat]
   );
 
   const updateItem = useCallback((id: string, patch: Partial<ConversionItem>) => {
@@ -199,6 +200,7 @@ export function useConverter() {
         status: "done",
         progress: 100,
         output: result.blob,
+        outputExtension: result.extension,
       });
     } catch (error) {
       updateItem(id, {
@@ -216,7 +218,13 @@ export function useConverter() {
   }, [items, convertItem]);
 
   const retryItem = useCallback((id: string) => {
-    updateItem(id, { status: "queued", progress: 0, error: undefined, output: undefined });
+    updateItem(id, {
+      status: "queued",
+      progress: 0,
+      error: undefined,
+      output: undefined,
+      outputExtension: undefined,
+    });
   }, [updateItem]);
 
   const removeItem = useCallback((id: string) => {
@@ -239,7 +247,8 @@ export function useConverter() {
     const item = items.find((entry) => entry.id === id);
     if (!item?.output) return;
 
-    const filename = withExtension(item.file.name, item.targetFormat);
+    const extension = item.outputExtension ?? item.targetFormat;
+    const filename = withExtension(item.file.name, extension);
     const url = URL.createObjectURL(item.output);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -253,7 +262,8 @@ export function useConverter() {
     const completed = items.filter((item) => item.output);
     completed.forEach((item) => {
       if (!item.output) return;
-      const filename = withExtension(item.file.name, item.targetFormat);
+      const extension = item.outputExtension ?? item.targetFormat;
+      const filename = withExtension(item.file.name, extension);
       zip.file(filename, item.output);
     });
 

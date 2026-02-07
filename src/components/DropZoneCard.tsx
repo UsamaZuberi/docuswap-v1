@@ -19,6 +19,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
     ? "Auto"
     : (hasTargets ? targetFormat.toUpperCase() : "No targets");
   const hasDocxNotice = sourceFormat === "docx" || sourceFormat === "pptx";
+  const hasPdfNotice = sourceFormat === "pdf";
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
@@ -67,6 +68,11 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
             {hasDocxNotice ? (
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Client-side conversion can take a while. Limit: 10 MB per file, 5 files per batch.
+              </p>
+            ) : null}
+            {hasPdfNotice ? (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                PDF pages export as a ZIP of images.
               </p>
             ) : null}
           </div>

@@ -18,7 +18,7 @@ export function getCategory(file: File): ConversionCategory {
   if (["svg"].includes(ext)) {
     return "developer";
   }
-  if (["pdf", "docx"].includes(ext)) {
+  if (["pdf", "docx", "pptx"].includes(ext)) {
     return "documents";
   }
   return "unknown";
@@ -42,6 +42,9 @@ export function getTargetFormats(file: File): TargetFormat[] {
     return [];
   }
   if (["docx"].includes(ext)) {
+    return ["pdf"];
+  }
+  if (["pptx"].includes(ext)) {
     return ["pdf"];
   }
   return [];

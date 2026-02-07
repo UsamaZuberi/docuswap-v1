@@ -63,7 +63,7 @@ export function useConverter() {
       }
       const detectedLimit = sourceFormat === "auto"
         ? undefined
-        : (sourceFormat === "docx" ? 5 : MAX_FILES_PER_BATCH);
+        : (sourceFormat === "docx" || sourceFormat === "pptx" ? 5 : MAX_FILES_PER_BATCH);
       const limitedFiles = files.slice(0, detectedLimit ?? MAX_FILES_PER_BATCH);
       const accepted: File[] = [];
       const rejected: File[] = [];
@@ -80,8 +80,8 @@ export function useConverter() {
       }
 
       const limit = sourceFormat === "auto"
-        ? (detectedSource === "docx" ? 5 : MAX_FILES_PER_BATCH)
-        : (sourceFormat === "docx" ? 5 : MAX_FILES_PER_BATCH);
+        ? (detectedSource === "docx" || detectedSource === "pptx" ? 5 : MAX_FILES_PER_BATCH)
+        : (sourceFormat === "docx" || sourceFormat === "pptx" ? 5 : MAX_FILES_PER_BATCH);
       const limitedByType = files.slice(0, limit);
 
       limitedByType.forEach((file) => {

@@ -18,7 +18,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
   const targetLabel = sourceFormat === "auto"
     ? "Auto"
     : (hasTargets ? targetFormat.toUpperCase() : "No targets");
-  const hasDocxNotice = sourceFormat === "docx";
+  const hasDocxNotice = sourceFormat === "docx" || sourceFormat === "pptx";
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
@@ -127,6 +127,8 @@ function formatToAccept(format: string) {
       return ".pdf,application/pdf";
     case "docx":
       return ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    case "pptx":
+      return ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation";
     default:
       return undefined;
   }

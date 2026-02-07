@@ -1,4 +1,5 @@
 import type { ConvertOptions, TargetFormat } from "./types";
+import { runPptxToPdfWorker } from "@/utils/pptxWorkerClient";
 
 const DOCX_RENDER_WIDTH_PX = 816;
 
@@ -15,6 +16,24 @@ export async function convertDocumentFile(
     const buffer = await file.arrayBuffer();
     options.onProgress?.(20);
     const blob = await renderDocxToPdf(buffer, (value) => options.onProgress?.(value));
+    options.onProgress?.(100);
+    return { blob, extension: "pdf" };
+  }
+
+  if (target === "pdf" && isPptx(file)) {
+    if (typeof window === "undefined") {
+      throw new Error("Client conversion requires a browser environment.");
+    }
+    if (typeof OffscreenCanvas === "undefined") {
+      throw new Error("PPTX conversion requires OffscreenCanvas support.");
+    }
+
+    const buffer = await file.arrayBuffer();
+    options.onProgress?.(15);
+    const blob = await runPptxToPdfWorker({
+      data: buffer,
+      onProgress: (value) => options.onProgress?.(value),
+    });
     options.onProgress?.(100);
     return { blob, extension: "pdf" };
   }
@@ -226,5 +245,13 @@ function isDocx(file: File) {
     file.type ===
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
     file.name.toLowerCase().endsWith(".docx")
+  );
+}
+
+function isPptx(file: File) {
+  return (
+    file.type ===
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+    file.name.toLowerCase().endsWith(".pptx")
   );
 }

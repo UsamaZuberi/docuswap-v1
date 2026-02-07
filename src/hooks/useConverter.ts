@@ -3,7 +3,7 @@ import JSZip from "jszip";
 
 import { convertFile, getTargetFormats } from "@/utils/converters";
 import type { TargetFormat } from "@/utils/converters/types";
-import { formatBytes, withExtension } from "@/utils/format";
+import { formatBytes, getExtension, withExtension } from "@/utils/format";
 import { isSourceFormat, sourceFormats, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
 
 export type ConversionStatus = "idle" | "queued" | "processing" | "done" | "error";
@@ -22,25 +22,50 @@ export interface ConversionItem {
 
 const DEFAULT_QUALITY = 0.9;
 const MAX_FILES_PER_BATCH = 100;
-const DEFAULT_SOURCE: SourceFormat = "png";
-const DEFAULT_TARGET: TargetFormat = targetsBySource[DEFAULT_SOURCE][0];
+const DEFAULT_SOURCE: SourceFormat = "auto";
+const DEFAULT_TARGET: TargetFormat = targetsBySource["png"][0];
 
 export function useConverter() {
   const [items, setItems] = useState<ConversionItem[]>([]);
   const [sourceFormat, setSourceFormat] = useState<SourceFormat>(DEFAULT_SOURCE);
   const [targetFormat, setCurrentTargetFormat] = useState<TargetFormat>(DEFAULT_TARGET);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
+  const [autoDetectedSource, setAutoDetectedSource] = useState<SourceFormat | null>(null);
+
+  const normalizeExtension = useCallback((ext: string) => {
+    if (ext === "jpg") return "jpeg";
+    if (ext === "markdown") return "md";
+    return ext;
+  }, []);
+
+  const detectSourceFromFile = useCallback((file: File) => {
+    const ext = normalizeExtension(getExtension(file.name));
+    if (!isSourceFormat(ext) || ext === "auto") return null;
+    if (targetsBySource[ext].length === 0) return null;
+    return ext;
+  }, [normalizeExtension]);
 
   const addFiles = useCallback(
     (files: File[]) => {
+      if (sourceFormat !== "auto" && targetsBySource[sourceFormat].length === 0) {
+        setUploadWarning(`No target formats available for .${sourceFormat}.`);
+        return;
+      }
       const limitedFiles = files.slice(0, MAX_FILES_PER_BATCH);
       const accepted: File[] = [];
       const rejected: File[] = [];
 
+      let detectedSource = autoDetectedSource;
+      if (sourceFormat === "auto" && !detectedSource) {
+        detectedSource = limitedFiles
+          .map((file) => detectSourceFromFile(file))
+          .find((value): value is SourceFormat => Boolean(value)) ?? null;
+      }
+
       limitedFiles.forEach((file) => {
         if (sourceFormat === "auto") {
-          const targets = getTargetFormats(file);
-          if (targets.length) {
+          const ext = normalizeExtension(getExtension(file.name));
+          if (detectedSource && ext === detectedSource) {
             accepted.push(file);
           } else {
             rejected.push(file);
@@ -48,7 +73,7 @@ export function useConverter() {
           return;
         }
 
-        const ext = file.name.toLowerCase().split(".").pop() ?? "";
+        const ext = normalizeExtension(getExtension(file.name));
         if (isSourceFormat(ext) && ext === sourceFormat) {
           accepted.push(file);
         } else {
@@ -63,7 +88,9 @@ export function useConverter() {
       if (rejected.length) {
         warnings.push(
           sourceFormat === "auto"
-            ? `Skipped ${rejected.length} unsupported file(s).`
+            ? detectedSource
+              ? `Keeping .${detectedSource} files only. Skipped ${rejected.length} other file(s).`
+              : `Skipped ${rejected.length} unsupported file(s).`
             : `Skipped ${rejected.length} file(s) that do not match .${sourceFormat}.`
         );
       }
@@ -71,9 +98,19 @@ export function useConverter() {
 
       if (!accepted.length) return;
 
+      if (sourceFormat === "auto" && detectedSource && detectedSource !== autoDetectedSource) {
+        setAutoDetectedSource(detectedSource);
+        const defaultTarget = targetsBySource[detectedSource][0];
+        if (defaultTarget && !targetsBySource[detectedSource].includes(targetFormat)) {
+          setCurrentTargetFormat(defaultTarget);
+        }
+      }
+
       setItems((prev) => {
         const next = accepted.map((file) => {
-          const autoTarget = sourceFormat === "auto" ? getTargetFormats(file)[0] : undefined;
+          const autoTarget = sourceFormat === "auto" && detectedSource
+            ? targetsBySource[detectedSource][0]
+            : undefined;
           return {
             id: crypto.randomUUID(),
             file,
@@ -100,10 +137,17 @@ export function useConverter() {
 
   const setGlobalSourceFormat = useCallback((value: SourceFormat) => {
     setSourceFormat(value);
-    const nextTarget = value === "auto" ? DEFAULT_TARGET : targetsBySource[value][0];
+    setAutoDetectedSource(null);
+    const nextTarget = value === "auto"
+      ? DEFAULT_TARGET
+      : (targetsBySource[value][0] ?? DEFAULT_TARGET);
     setCurrentTargetFormat(nextTarget);
     setItems([]);
-    setUploadWarning(null);
+    if (value !== "auto" && targetsBySource[value].length === 0) {
+      setUploadWarning(`No target formats available for .${value}.`);
+    } else {
+      setUploadWarning(null);
+    }
   }, []);
 
   const setGlobalTargetFormat = useCallback((value: TargetFormat) => {
@@ -191,6 +235,7 @@ export function useConverter() {
   const clearAll = useCallback(() => {
     setItems([]);
     setUploadWarning(null);
+    setAutoDetectedSource(null);
   }, []);
 
   const hasOutputs = useMemo(() => items.some((item) => item.output), [items]);
@@ -210,6 +255,7 @@ export function useConverter() {
     setTargetFormat,
     setQuality,
     sourceFormat,
+    autoDetectedSource,
     targetFormat,
     setGlobalSourceFormat,
     setGlobalTargetFormat,

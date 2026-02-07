@@ -34,7 +34,7 @@ export function FileCard({
   const statusBadge = statusStyles[item.status];
   const isImage =
     item.file.type.startsWith("image/") ||
-    item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|heic|svg)$/);
+    item.file.name.toLowerCase().match(/\.(png|jpe?g|webp|svg)$/);
 
   return (
     <Card className="border border-slate-300 bg-white transition-shadow hover:shadow-xl hover:shadow-slate-200/70 dark:border-slate-700/60 dark:bg-slate-900 dark:hover:shadow-slate-950/60">

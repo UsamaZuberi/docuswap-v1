@@ -4,17 +4,13 @@ export type TargetFormat =
   | "png"
   | "jpeg"
   | "webp"
-  | "heic"
   | "json"
   | "csv"
   | "xml"
   | "md"
   | "svg"
-  | "jsx"
-  | "ts"
   | "pdf"
   | "docx"
-  | "ppt"
   | "pptx";
 
 export interface ConvertOptions {

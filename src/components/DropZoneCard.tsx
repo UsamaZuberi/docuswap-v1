@@ -9,19 +9,23 @@ interface DropZoneCardProps {
   onFilesAdded: (files: File[]) => void;
   sourceFormat: string;
   targetFormat: string;
+  hasTargets: boolean;
 }
 
-export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZoneCardProps) {
+export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTargets }: DropZoneCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const targetLabel = sourceFormat === "auto" ? "Suggested" : targetFormat.toUpperCase();
+  const targetLabel = sourceFormat === "auto"
+    ? "Auto"
+    : (hasTargets ? targetFormat.toUpperCase() : "No targets");
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
       if (!fileList?.length) return;
+      if (sourceFormat !== "auto" && !hasTargets) return;
       onFilesAdded(Array.from(fileList));
     },
-    [onFilesAdded]
+    [hasTargets, onFilesAdded, sourceFormat]
   );
 
   return (
@@ -54,8 +58,10 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Drop files here</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {sourceFormat === "auto"
-                ? "Upload any supported files and we'll suggest a target."
-                : `Upload .${sourceFormat} files and convert to ${targetLabel}.`}
+                ? "Upload any supported files and we'll lock to the first type."
+                : hasTargets
+                    ? `Upload .${sourceFormat} files and convert to ${targetLabel}.`
+                    : `No targets available for .${sourceFormat} right now.`}
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -63,14 +69,17 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
               variant="secondary"
               className="border border-slate-200 bg-white text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
               onClick={() => inputRef.current?.click()}
+              disabled={sourceFormat !== "auto" && !hasTargets}
             >
               <FolderOpen className="h-4 w-4" />
               Browse Files
             </Button>
             <span className="text-xs text-slate-500 dark:text-slate-500">
               {sourceFormat === "auto"
-                ? "Supported: Auto → Suggested"
-                : `Supported: ${sourceFormat.toUpperCase()} → ${targetLabel}`}
+                ? "Supported: Auto → Auto"
+                : hasTargets
+                    ? `Supported: ${sourceFormat.toUpperCase()} → ${targetLabel}`
+                    : `Supported: ${sourceFormat.toUpperCase()} → (none)`}
             </span>
           </div>
         </motion.div>
@@ -81,6 +90,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat }: DropZ
           multiple
           accept={formatToAccept(sourceFormat)}
           onChange={(event) => handleFiles(event.target.files)}
+          disabled={sourceFormat !== "auto" && !hasTargets}
         />
       </CardContent>
     </Card>
@@ -97,8 +107,6 @@ function formatToAccept(format: string) {
       return ".png,image/png";
     case "webp":
       return ".webp,image/webp";
-    case "heic":
-      return ".heic,image/heic";
     case "svg":
       return ".svg,image/svg+xml";
     case "json":
@@ -109,14 +117,10 @@ function formatToAccept(format: string) {
       return ".xml,application/xml,text/xml";
     case "md":
       return ".md,.markdown,text/markdown";
-    case "html":
-      return ".html,.htm,text/html";
     case "pdf":
       return ".pdf,application/pdf";
     case "docx":
       return ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    case "ppt":
-      return ".ppt,application/vnd.ms-powerpoint";
     case "pptx":
       return ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation";
     default:

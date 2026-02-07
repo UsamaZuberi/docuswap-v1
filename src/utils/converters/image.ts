@@ -11,19 +11,7 @@ export async function convertImageFile(
 ): Promise<{ blob: Blob; extension: TargetFormat }>
  {
   const quality = options.quality ?? 0.9;
-  if (target === "heic") {
-    throw new Error("HEIC output is not supported in-browser yet.");
-  }
-
-  let sourceBlob: Blob = file;
-  if (isHeic(file)) {
-    if (typeof window === "undefined") {
-      throw new Error("HEIC conversion requires a browser environment.");
-    }
-    const { default: heic2any } = await import("heic2any");
-    const converted = await heic2any({ blob: file, toType: "image/png" });
-    sourceBlob = Array.isArray(converted) ? converted[0] : converted;
-  }
+  const sourceBlob: Blob = file;
 
   if (isSvg(file)) {
     const pngBlob = await svgToPng(sourceBlob, quality);
@@ -77,10 +65,6 @@ async function svgToPng(blob: Blob, quality: number) {
     );
   });
   return pngBlob;
-}
-
-function isHeic(file: File) {
-  return file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic");
 }
 
 function isSvg(file: File) {

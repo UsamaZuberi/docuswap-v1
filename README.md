@@ -17,7 +17,7 @@ DocuSwap is a client-side file conversion studio built with Next.js 15, Tailwind
 - Next.js 15 (App Router) + TypeScript
 - Tailwind CSS + shadcn/ui + Lucide icons
 - Framer Motion for motion states
-- JSZip, PapaParse, XML-js, heic2any, pdf-lib
+- JSZip, PapaParse, XML-js, pdf-lib
 
 ## Project Layout
 
@@ -54,10 +54,8 @@ yarn start
 
 ## Notes
 
-- PDF → DOCX uses a stub payload with pdf-lib metadata extraction.
 - DOCX → PDF is a placeholder for a WASM-based implementation.
-- PPT/PPTX → PDF uses a stub payload; replace with WASM when available.
-- HEIC output is not supported in-browser yet.
+- PPTX → PDF requires a PPTX renderer (WASM) and is not wired yet.
 
 ## Deployment & SEO
 

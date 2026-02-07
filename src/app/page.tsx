@@ -24,6 +24,7 @@ export default function Home() {
     clearAll,
     setQuality,
     sourceFormat,
+    autoDetectedSource,
     targetFormat,
     setGlobalSourceFormat,
     setGlobalTargetFormat,
@@ -34,6 +35,9 @@ export default function Home() {
   } = useConverter();
 
   const isAuto = sourceFormat === "auto";
+  const effectiveSource = isAuto ? autoDetectedSource : sourceFormat;
+  const targetOptions = effectiveSource ? targetsBySource[effectiveSource] : [];
+  const hasTargets = targetOptions.length > 0;
   const totalFiles = items.length;
   const totalSize = items.reduce((sum, item) => sum + item.file.size, 0);
   const completedFiles = items.filter((item) => item.status === "done").length;
@@ -55,14 +59,14 @@ export default function Home() {
             <FormatSelector
               label="Convert To"
               value={targetFormat}
-              options={targetsBySource[sourceFormat]}
+              options={targetOptions}
               onValueChange={(value) => setGlobalTargetFormat(value as typeof targetFormat)}
-              disabled={isAuto}
+              disabled={!hasTargets || (isAuto && !hasItems)}
             />
           </div>
           {isAuto ? (
             <div className="rounded-lg border border-indigo-300 bg-indigo-100/70 px-4 py-2 text-xs font-medium text-indigo-900 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-200">
-              Auto-detect suggests a target per file based on its type.
+              Auto-detect locks to the first file type you add.
             </div>
           ) : null}
           {uploadWarning ? (
@@ -75,6 +79,7 @@ export default function Home() {
           onFilesAdded={addFiles}
           sourceFormat={sourceFormat}
           targetFormat={targetFormat}
+          hasTargets={hasTargets}
         />
         {totalFiles > 0 ? (
           <BatchStats

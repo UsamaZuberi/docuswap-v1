@@ -9,16 +9,16 @@ import type { DataFormat } from "./data";
 
 export function getCategory(file: File): ConversionCategory {
   const ext = getExtension(file.name);
-  if (file.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "heic", "heif", "svg"].includes(ext)) {
+  if (file.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "svg"].includes(ext)) {
     return "image";
   }
   if (["json", "csv", "xml", "md", "markdown"].includes(ext)) {
     return "data";
   }
-  if (["svg", "html", "htm", "json"].includes(ext)) {
+  if (["svg"].includes(ext)) {
     return "developer";
   }
-  if (["pdf", "docx", "ppt", "pptx"].includes(ext)) {
+  if (["pdf", "docx", "pptx"].includes(ext)) {
     return "documents";
   }
   return "unknown";
@@ -26,11 +26,11 @@ export function getCategory(file: File): ConversionCategory {
 
 export function getTargetFormats(file: File): TargetFormat[] {
   const ext = getExtension(file.name);
-  if (["png", "jpg", "jpeg", "webp", "heic", "heif", "svg"].includes(ext) || file.type.startsWith("image/")) {
-    return ["png", "jpeg", "webp", "heic"];
+  if (["png", "jpg", "jpeg", "webp", "svg"].includes(ext) || file.type.startsWith("image/")) {
+    return ["png", "jpeg", "webp"];
   }
   if (["json", "csv", "xml", "md", "markdown"].includes(ext)) {
-    if (ext === "json") return ["csv", "xml", "ts"];
+    if (ext === "json") return ["csv", "xml"];
     if (ext === "csv") return ["json", "md"];
     if (ext === "xml") return ["json"];
     return ["csv"];
@@ -38,20 +38,14 @@ export function getTargetFormats(file: File): TargetFormat[] {
   if (["svg"].includes(ext)) {
     return ["png"];
   }
-  if (["html", "htm"].includes(ext)) {
-    return ["jsx"];
-  }
   if (["pdf"].includes(ext)) {
-    return ["docx"];
+    return [];
   }
   if (["docx"].includes(ext)) {
     return ["pdf"];
   }
-  if (["ppt", "pptx"].includes(ext)) {
+  if (["pptx"].includes(ext)) {
     return ["pdf"];
-  }
-  if (["json"].includes(ext)) {
-    return ["ts"];
   }
   return [];
 }
@@ -67,12 +61,6 @@ export async function convertFile(
 
   if (category === "image") {
     const result = await convertImageFile(file, target, { quality: options.quality });
-    options.onProgress?.(100);
-    return result;
-  }
-
-  if (target === "ts") {
-    const result = await convertDeveloperFile(file, target);
     options.onProgress?.(100);
     return result;
   }

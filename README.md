@@ -1,6 +1,6 @@
 # DocuSwap
 
-DocuSwap is a client-side file conversion studio built with Next.js 16, Tailwind CSS, and shadcn/ui. It focuses on fast, private conversions that run entirely in the browser, including DOCX to PDF rendering.
+DocuSwap is a client-side file conversion studio built with Next.js 16, Tailwind CSS, and shadcn/ui. It focuses on fast, private conversions that run entirely in the browser, including DOCX/PPTX to PDF and PDF to image rendering.
 
 ## Features
 
@@ -12,14 +12,16 @@ DocuSwap is a client-side file conversion studio built with Next.js 16, Tailwind
 - Client-side conversions for images, data formats, developer utilities, and documents.
 - Web Worker template for offloading data conversions.
 - DOCX to PDF conversion using docx-preview with a mammoth fallback.
+- PPTX to PDF rendering via a worker-based canvas pipeline.
+- PDF to PNG/JPEG export as a ZIP of page images.
 
 ## Tech Stack
 
 - Next.js 16 (App Router) + TypeScript
 - Tailwind CSS + shadcn/ui + Lucide icons
 - Framer Motion for motion states
-- JSZip, PapaParse, XML-js, pdf-lib
-- docx-preview, mammoth, html2pdf.js
+- JSZip, PapaParse, XML-js, pdf-lib, pdfjs-dist
+- docx-preview, mammoth, html2pdf.js, jsPDF
 
 ## Project Layout
 
@@ -56,8 +58,10 @@ yarn start
 
 ## Notes
 
-- DOCX → PDF runs fully in the browser. Large documents can take longer to render.
-- DOCX conversions are limited to 5 files per batch to keep performance predictable.
+- DOCX → PDF and PPTX → PDF run fully in the browser. Large documents can take longer to render.
+- DOCX/PPTX conversions are limited to 5 files per batch to keep performance predictable.
+- PDF → PNG/JPEG exports a ZIP containing one image per page.
+- For full PDF text fidelity, the app serves PDF.js CMaps and standard fonts from /public/pdfjs.
 
 ## Deployment & SEO
 

@@ -78,6 +78,16 @@ export async function convertPdfToImages(file: File, options: PdfToImageOptions 
 }
 
 export async function downloadPdfImagesZip(file: File, options: PdfToImageOptions = {}) {
+  const { blob } = await createPdfImagesZip(file, options);
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${stripExtension(file.name)}-images.zip`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function createPdfImagesZip(file: File, options: PdfToImageOptions = {}) {
   const { images, filenames } = await convertPdfToImages(file, options);
   const zip = new JSZip();
 
@@ -86,12 +96,7 @@ export async function downloadPdfImagesZip(file: File, options: PdfToImageOption
   });
 
   const blob = await zip.generateAsync({ type: "blob" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${stripExtension(file.name)}-images.zip`;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  return { blob, filenames };
 }
 
 type WorkerOptions = {

@@ -1,7 +1,5 @@
-import JSZip from "jszip";
-
 import type { ConvertOptions, OutputFormat, TargetFormat } from "./types";
-import { convertPdfToImages } from "@/utils/pdfToImage";
+import { createPdfImagesZip } from "@/utils/pdfToImage";
 import { runPptxToPdfWorker } from "@/utils/pptxWorkerClient";
 
 const DOCX_RENDER_WIDTH_PX = 816;
@@ -48,7 +46,7 @@ export async function convertDocumentFile(
 
     options.onProgress?.(10);
     const format = target === "png" ? "image/png" : "image/jpeg";
-    const { images, filenames } = await convertPdfToImages(file, {
+    const { blob } = await createPdfImagesZip(file, {
       format,
       quality: target === "jpeg" ? options.quality : undefined,
       scale: 2,
@@ -58,12 +56,6 @@ export async function convertDocumentFile(
         options.onProgress?.(percent);
       },
     });
-
-    const zip = new JSZip();
-    images.forEach((image, index) => {
-      zip.file(filenames[index], image);
-    });
-    const blob = await zip.generateAsync({ type: "blob" });
     options.onProgress?.(100);
     return { blob, extension: "zip" };
   }

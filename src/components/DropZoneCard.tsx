@@ -72,7 +72,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
             ) : null}
             {hasPdfNotice ? (
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                PDF pages export as a ZIP of images.
+                PDF pages export as a ZIP of PNG/JPEG images.
               </p>
             ) : null}
           </div>

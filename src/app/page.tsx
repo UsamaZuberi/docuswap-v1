@@ -78,7 +78,7 @@ export default function Home() {
           ) : null}
           {pdfConversionActive ? (
             <div className="rounded-lg border border-emerald-300 bg-emerald-100/80 px-4 py-2 text-xs font-medium text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
-              PDF pages export as a ZIP of images. Large files may take a moment.
+              PDF pages export as a ZIP of PNG/JPEG images. Large files may take a moment.
             </div>
           ) : null}
           {uploadWarning ? (

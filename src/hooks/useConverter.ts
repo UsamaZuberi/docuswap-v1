@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import JSZip from "jszip";
 
-import { convertFile, getTargetFormats } from "@/utils/converters";
+import { convertFile } from "@/utils/converters";
 import type { TargetFormat } from "@/utils/converters/types";
 import { formatBytes, getExtension, withExtension } from "@/utils/format";
-import { isSourceFormat, sourceFormats, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
+import { isSourceFormat, targetsBySource, type SourceFormat } from "@/utils/converters/supported";
 
 export type ConversionStatus = "idle" | "queued" | "processing" | "done" | "error";
 
@@ -31,6 +31,16 @@ export function useConverter() {
   const [targetFormat, setCurrentTargetFormat] = useState<TargetFormat>(DEFAULT_TARGET);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
   const [autoDetectedSource, setAutoDetectedSource] = useState<SourceFormat | null>(null);
+  const itemsRef = useRef<ConversionItem[]>([]);
+  const autoDetectedSourceRef = useRef<SourceFormat | null>(null);
+
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    autoDetectedSourceRef.current = autoDetectedSource;
+  }, [autoDetectedSource]);
 
   const normalizeExtension = useCallback((ext: string) => {
     if (ext === "jpg") return "jpeg";
@@ -51,18 +61,30 @@ export function useConverter() {
         setUploadWarning(`No target formats available for .${sourceFormat}.`);
         return;
       }
-      const limitedFiles = files.slice(0, MAX_FILES_PER_BATCH);
+      const detectedLimit = sourceFormat === "auto"
+        ? undefined
+        : (sourceFormat === "docx" ? 5 : MAX_FILES_PER_BATCH);
+      const limitedFiles = files.slice(0, detectedLimit ?? MAX_FILES_PER_BATCH);
       const accepted: File[] = [];
       const rejected: File[] = [];
 
-      let detectedSource = autoDetectedSource;
-      if (sourceFormat === "auto" && !detectedSource) {
-        detectedSource = limitedFiles
-          .map((file) => detectSourceFromFile(file))
-          .find((value): value is SourceFormat => Boolean(value)) ?? null;
+      const hasExistingItems = itemsRef.current.length > 0;
+      const firstSupported = limitedFiles
+        .map((file) => detectSourceFromFile(file))
+        .find((value): value is SourceFormat => Boolean(value)) ?? null;
+      let detectedSource = sourceFormat === "auto" && !hasExistingItems
+        ? firstSupported
+        : autoDetectedSourceRef.current;
+      if (sourceFormat === "auto" && !hasExistingItems && detectedSource !== firstSupported) {
+        detectedSource = firstSupported;
       }
 
-      limitedFiles.forEach((file) => {
+      const limit = sourceFormat === "auto"
+        ? (detectedSource === "docx" ? 5 : MAX_FILES_PER_BATCH)
+        : (sourceFormat === "docx" ? 5 : MAX_FILES_PER_BATCH);
+      const limitedByType = files.slice(0, limit);
+
+      limitedByType.forEach((file) => {
         if (sourceFormat === "auto") {
           const ext = normalizeExtension(getExtension(file.name));
           if (detectedSource && ext === detectedSource) {
@@ -82,8 +104,8 @@ export function useConverter() {
       });
 
       const warnings: string[] = [];
-      if (files.length > MAX_FILES_PER_BATCH) {
-        warnings.push(`Only the first ${MAX_FILES_PER_BATCH} files were added. Select up to ${MAX_FILES_PER_BATCH} at a time.`);
+      if (files.length > limit) {
+        warnings.push(`Only the first ${limit} files were added. Select up to ${limit} at a time.`);
       }
       if (rejected.length) {
         warnings.push(
@@ -124,7 +146,7 @@ export function useConverter() {
         return [...prev, ...next];
       });
     },
-    [sourceFormat, targetFormat]
+    [detectSourceFromFile, normalizeExtension, sourceFormat, targetFormat]
   );
 
   const updateItem = useCallback((id: string, patch: Partial<ConversionItem>) => {
@@ -198,8 +220,20 @@ export function useConverter() {
   }, [updateItem]);
 
   const removeItem = useCallback((id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+    setItems((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      if (next.length === 0) {
+        setUploadWarning(null);
+        setAutoDetectedSource(null);
+        autoDetectedSourceRef.current = null;
+        itemsRef.current = [];
+        if (sourceFormat === "auto") {
+          setCurrentTargetFormat(DEFAULT_TARGET);
+        }
+      }
+      return next;
+    });
+  }, [sourceFormat]);
 
   const downloadItem = useCallback((id: string) => {
     const item = items.find((entry) => entry.id === id);
@@ -234,9 +268,14 @@ export function useConverter() {
 
   const clearAll = useCallback(() => {
     setItems([]);
+    itemsRef.current = [];
     setUploadWarning(null);
     setAutoDetectedSource(null);
-  }, []);
+    autoDetectedSourceRef.current = null;
+    if (sourceFormat === "auto") {
+      setCurrentTargetFormat(DEFAULT_TARGET);
+    }
+  }, [sourceFormat]);
 
   const hasOutputs = useMemo(() => items.some((item) => item.output), [items]);
   const hasItems = items.length > 0;

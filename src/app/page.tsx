@@ -38,6 +38,7 @@ export default function Home() {
   const effectiveSource = isAuto ? autoDetectedSource : sourceFormat;
   const targetOptions = effectiveSource ? targetsBySource[effectiveSource] : [];
   const hasTargets = targetOptions.length > 0;
+  const docConversionActive = effectiveSource === "docx";
   const totalFiles = items.length;
   const totalSize = items.reduce((sum, item) => sum + item.file.size, 0);
   const completedFiles = items.filter((item) => item.status === "done").length;
@@ -67,6 +68,11 @@ export default function Home() {
           {isAuto ? (
             <div className="rounded-lg border border-indigo-300 bg-indigo-100/70 px-4 py-2 text-xs font-medium text-indigo-900 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-200">
               Auto-detect locks to the first file type you add.
+            </div>
+          ) : null}
+          {docConversionActive ? (
+            <div className="rounded-lg border border-sky-300 bg-sky-100/80 px-4 py-2 text-xs font-medium text-sky-900 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
+              DOCX conversions run in your browser and may take a while. Keep this tab open (max 10 MB each, 5 files per batch).
             </div>
           ) : null}
           {uploadWarning ? (

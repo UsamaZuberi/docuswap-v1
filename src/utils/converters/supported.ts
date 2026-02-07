@@ -11,7 +11,6 @@ export const sourceFormats = [
   "xml",
   "md",
   "docx",
-  "pptx",
 ] as const;
 
 export type SourceFormat = (typeof sourceFormats)[number];
@@ -27,7 +26,6 @@ export const targetsBySource: Record<SourceFormat, TargetFormat[]> = {
   xml: ["json"],
   md: ["csv"],
   docx: ["pdf"],
-  pptx: ["pdf"],
 };
 
 export function isSourceFormat(value: string): value is SourceFormat {

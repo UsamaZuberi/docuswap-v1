@@ -10,8 +10,7 @@ export type TargetFormat =
   | "md"
   | "svg"
   | "pdf"
-  | "docx"
-  | "pptx";
+  | "docx";
 
 export interface ConvertOptions {
   quality?: number;

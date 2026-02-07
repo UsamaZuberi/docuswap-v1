@@ -18,6 +18,7 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
   const targetLabel = sourceFormat === "auto"
     ? "Auto"
     : (hasTargets ? targetFormat.toUpperCase() : "No targets");
+  const hasDocxNotice = sourceFormat === "docx";
 
   const handleFiles = useCallback(
     (fileList: FileList | null) => {
@@ -63,6 +64,11 @@ export function DropZoneCard({ onFilesAdded, sourceFormat, targetFormat, hasTarg
                     ? `Upload .${sourceFormat} files and convert to ${targetLabel}.`
                     : `No targets available for .${sourceFormat} right now.`}
             </p>
+            {hasDocxNotice ? (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Client-side conversion can take a while. Limit: 10 MB per file, 5 files per batch.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Button
@@ -121,8 +127,6 @@ function formatToAccept(format: string) {
       return ".pdf,application/pdf";
     case "docx":
       return ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    case "pptx":
-      return ".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation";
     default:
       return undefined;
   }

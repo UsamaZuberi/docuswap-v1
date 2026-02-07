@@ -1,10 +1,7 @@
 /// <reference lib="webworker" />
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
 
-GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+const CMAP_URL = "/pdfjs/cmaps/";
+const STANDARD_FONT_URL = "/pdfjs/standard_fonts/";
 
 
 type PdfImageFormat = "image/png" | "image/jpeg";
@@ -46,6 +43,11 @@ type PdfWorkerError = {
   error: string;
 };
 
+type PdfJsModule = {
+  getDocument: unknown;
+  GlobalWorkerOptions: { workerSrc: string };
+};
+
 type PdfRenderTask = {
   promise: Promise<unknown>;
 };
@@ -66,6 +68,31 @@ type PdfDocumentLoadingTask = {
   promise: Promise<PdfDocument>;
 };
 
+let pdfjsReady: Promise<PdfJsModule> | null = null;
+
+async function loadPdfJs() {
+  if (!pdfjsReady) {
+    const globalObj = globalThis as { document?: unknown };
+    if (typeof globalObj.document === "undefined") {
+      const base = typeof self !== "undefined" && "location" in self ? self.location?.href ?? "" : "";
+      globalObj.document = {
+        baseURI: base,
+        createElement: () => ({}),
+      };
+    }
+    pdfjsReady = import("pdfjs-dist/legacy/build/pdf.mjs") as unknown as Promise<PdfJsModule>;
+  }
+
+  const pdfjs = await pdfjsReady;
+  if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+      import.meta.url
+    ).toString();
+  }
+  return pdfjs;
+}
+
 self.onmessage = async (event: MessageEvent<PdfWorkerRequest>) => {
   const { id, kind, payload } = event.data;
   if (kind !== "pdf-to-images") {
@@ -84,8 +111,12 @@ self.onmessage = async (event: MessageEvent<PdfWorkerRequest>) => {
     const scale = payload.scale ?? 2;
     const batchSize = payload.batchSize ?? 3;
 
+    const { getDocument } = await loadPdfJs();
     const pdf = await (getDocument as unknown as (source: unknown) => PdfDocumentLoadingTask)({
       data: payload.data,
+      cMapUrl: CMAP_URL,
+      cMapPacked: true,
+      standardFontDataUrl: STANDARD_FONT_URL,
       disableFontFace: true,
       useSystemFonts: true,
     }).promise;

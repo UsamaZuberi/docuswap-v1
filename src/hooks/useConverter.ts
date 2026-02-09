@@ -72,7 +72,7 @@ export function useConverter() {
       const hasExistingItems = itemsRef.current.length > 0;
       const firstSupported = limitedFiles
         .map((file) => detectSourceFromFile(file))
-        .find((value): value is SourceFormat => Boolean(value)) ?? null;
+        .find((value): value is Exclude<SourceFormat, "auto"> => value !== null) ?? null;
       let detectedSource = sourceFormat === "auto" && !hasExistingItems
         ? firstSupported
         : autoDetectedSourceRef.current;

@@ -123,6 +123,8 @@ function formatToAccept(format: string) {
       return ".svg,image/svg+xml";
     case "json":
       return ".json,application/json";
+    case "js":
+      return ".js,.mjs,.cjs,application/javascript,text/javascript";
     case "csv":
       return ".csv,text/csv";
     case "xml":

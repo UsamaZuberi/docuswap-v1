@@ -46,6 +46,7 @@ export function useConverter() {
   const normalizeExtension = useCallback((ext: string) => {
     if (ext === "jpg") return "jpeg";
     if (ext === "markdown") return "md";
+    if (ext === "mjs" || ext === "cjs") return "js";
     return ext;
   }, []);
 

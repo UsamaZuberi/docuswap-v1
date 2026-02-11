@@ -12,7 +12,7 @@ export function getCategory(file: File): ConversionCategory {
   if (file.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "svg"].includes(ext)) {
     return "image";
   }
-  if (["json", "csv", "xml", "md", "markdown"].includes(ext)) {
+  if (["json", "js", "mjs", "cjs", "csv", "xml", "md", "markdown"].includes(ext)) {
     return "data";
   }
   if (["svg"].includes(ext)) {
@@ -29,8 +29,9 @@ export function getTargetFormats(file: File): TargetFormat[] {
   if (["png", "jpg", "jpeg", "webp", "svg"].includes(ext) || file.type.startsWith("image/")) {
     return ["png", "jpeg", "webp"];
   }
-  if (["json", "csv", "xml", "md", "markdown"].includes(ext)) {
-    if (ext === "json") return ["csv", "xml"];
+  if (["json", "js", "mjs", "cjs", "csv", "xml", "md", "markdown"].includes(ext)) {
+    if (ext === "json") return ["csv", "xml", "js"];
+    if (ext === "js" || ext === "mjs" || ext === "cjs") return ["json"];
     if (ext === "csv") return ["json", "md"];
     if (ext === "xml") return ["json"];
     return ["csv"];

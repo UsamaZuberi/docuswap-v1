@@ -5,6 +5,7 @@ export type TargetFormat =
   | "jpeg"
   | "webp"
   | "json"
+  | "js"
   | "csv"
   | "xml"
   | "md"

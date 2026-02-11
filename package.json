@@ -19,6 +19,7 @@
     "docx-preview": "^0.3.7",
     "framer-motion": "^12.33.0",
     "html2pdf.js": "^0.14.0",
+    "json5": "^2.2.3",
     "jszip": "^3.10.1",
     "jspdf": "^2.5.1",
     "lucide-react": "^0.563.0",
